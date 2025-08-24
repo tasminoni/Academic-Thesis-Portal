@@ -343,7 +343,8 @@ const postProcessSummary = (text) => {
 };
 
 // Hugging Face API configuration
-const HUGGINGFACE_API_TOKEN = process.env.HUGGINGFACE_API_TOKEN || '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';
+const hfToken = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_TOKEN;
+const hf = new HfInference(process.env.HUGGINGFACE_API_TOKEN);
 const HUGGINGFACE_API_URL = 'https://api-inference.huggingface.co/models/facebook/bart-large-cnn';
 const ACADEMIC_MODEL_URL = 'https://api-inference.huggingface.co/models/google/pegasus-xsum';
 const SCIENTIFIC_MODEL_URL = 'https://api-inference.huggingface.co/models/facebook/bart-large-cnn'; // For scientific content
