@@ -31,7 +31,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000","https://academic-thesis-portal-1.onrender.com"],
+    origin: ["http://localhost:3000","https://academic-thesis-portal-1.onrender.com","https://academic-thesis-portal.vercel.app"],
     methods: ["GET", "POST"]
   }
 });
@@ -83,7 +83,7 @@ const generalLimiter = rateLimit({
 // Middleware
 app.use(generalLimiter);
 app.use(cors({
-  origin: ["http://localhost:3000","https://academic-thesis-portal-1.onrender.com"],
+  origin: ["http://localhost:3000","https://academic-thesis-portal-1.onrender.com","https://academic-thesis-portal.vercel.app"],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
