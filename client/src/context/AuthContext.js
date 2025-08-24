@@ -3,7 +3,7 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode'; // Install: npm install jwt-decode
 
 // Configure axios base URL
-axios.defaults.baseURL = 'http://localhost:5001';
+axios.defaults.baseURL = 'https://academic-thesis-portal.onrender.com';
 
 // Toaster event system
 const toasterEvents = {

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import fs from 'fs';
 import { createRequire } from 'module';
+import { HfInference } from '@huggingface/inference';
 
 const require = createRequire(import.meta.url);
 
