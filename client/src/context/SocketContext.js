@@ -20,18 +20,26 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      // Initialize socket connection
-      const newSocket = io('http://localhost:5001', {
-        transports: ['websocket']
+      // Resolve Socket URL from env or current origin
+      const socketUrl = process.env.REACT_APP_SOCKET_URL || (typeof window !== 'undefined' ? window.location.origin : undefined);
+
+      // Initialize socket connection with robust reconnection
+      const newSocket = io(socketUrl, {
+        transports: ['websocket'],
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
       });
 
-      // Join user's personal room
-      newSocket.emit('join', user.id);
+      const userRoomId = user?._id || user?.id;
 
       // Set up event listeners
       newSocket.on('connect', () => {
         console.log('Socket.io connected to server with ID:', newSocket.id);
-        console.log('User joined room:', user.id);
+        if (userRoomId) {
+          newSocket.emit('join', userRoomId);
+        }
         setSocket(newSocket);
       });
 
@@ -41,6 +49,21 @@ export const SocketProvider = ({ children }) => {
 
       newSocket.on('connect_error', (error) => {
         console.error('Socket.io connection error:', error);
+      });
+
+      newSocket.on('reconnect_attempt', (attempt) => {
+        console.log('Socket.io reconnect attempt:', attempt);
+      });
+
+      newSocket.on('reconnect', (attempt) => {
+        console.log('Socket.io reconnected after attempts:', attempt);
+        if (userRoomId) {
+          newSocket.emit('join', userRoomId);
+        }
+      });
+
+      newSocket.on('disconnect', (reason) => {
+        console.log('Socket.io disconnected. Reason:', reason);
       });
 
       // Handle real-time notifications

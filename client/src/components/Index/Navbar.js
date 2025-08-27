@@ -279,11 +279,18 @@ const Navbar = () => {
             {/* Hide Browse Thesis for admin users */}
             {user?.role !== 'admin' && (
               <>
-                <Link to="/theses" className="hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">
+                <Link to="/theses" className="hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium flex items-center">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422A12.083 12.083 0 0112 20.5 12.083 12.083 0 015.84 10.578L12 14z" />
+                  </svg>
                   Browse Thesis
                 </Link>
                 {user?.role === 'student' && (
-                  <Link to="/feedbacks" className="hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">
+                  <Link to="/feedbacks" className="hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium flex items-center">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.036 3.186a1 1 0 00.95.69h3.356c.969 0 1.371 1.24.588 1.81l-2.716 1.973a1 1 0 00-.364 1.118l1.036 3.186c.3.921-.755 1.688-1.54 1.118l-2.716-1.973a1 1 0 00-1.176 0l-2.716 1.973c-.784.57-1.838-.197-1.539-1.118l1.036-3.186a1 1 0 00-.364-1.118L2.07 8.613c-.783-.57-.38-1.81.588-1.81h3.356a1 1 0 00.95-.69l1.036-3.186z" />
+                    </svg>
                     Review & Ratings
                   </Link>
                 )}
@@ -311,9 +318,11 @@ const Navbar = () => {
                   <div className="hidden md:flex items-center space-x-4">
                     <Link 
                       to="/notifications" 
-                      className="relative hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                      className="relative hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center"
                     >
-                      Notifications
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                      </svg>
                       {unreadNotifications > 0 && (
                         <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                           {unreadNotifications}
@@ -326,8 +335,11 @@ const Navbar = () => {
                 <span className="text-sm">Welcome, {user?.name}</span>
                 <button
                   onClick={handleLogout}
-                  className="bg-white text-red-500 hover:bg-red-600 px-3 py-2 rounded-md text-sm font-medium"
+                  className="bg-white text-red-500 hover:bg-red-600 px-3 py-2 rounded-md text-sm font-medium flex items-center"
                 >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 11-6 0v-1m6-10V5a3 3 0 10-6 0v1" />
+                  </svg>
                   Logout
                 </button>
               </div>
@@ -336,14 +348,20 @@ const Navbar = () => {
               <div className="flex items-center space-x-2">
                 <Link
                   to="/login"
-                  className="bg-blue-500 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium"
+                  className="bg-blue-500 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center"
                 >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12H3m12 0l-4 4m4-4l-4-4m10 8v1a3 3 0 11-6 0v-1m6-10V5a3 3 0 10-6 0v1" />
+                  </svg>
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-blue-500 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium"
+                  className="bg-blue-500 hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center"
                 >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3M5.121 17.804A4 4 0 018 17h8a4 4 0 012.879 1.804M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                   Register
                 </Link>
               </div>
@@ -360,7 +378,7 @@ const Navbar = () => {
                   className="relative hover:text-blue-200 p-2 rounded-md text-sm font-medium transition-colors"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM4 19h6a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                   {unreadNotifications > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -391,9 +409,13 @@ const Navbar = () => {
             {user?.role !== 'admin' && (
               <Link
                 to="/theses"
-                className="block px-3 py-2 rounded-md text-base font-medium hover:text-blue-200"
+                className="block px-3 py-2 rounded-md text-base font-medium hover:text-blue-200 flex items-center"
                 onClick={() => setIsMenuOpen(false)}
               >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422A12.083 12.083 0 0112 20.5 12.083 12.083 0 015.84 10.578L12 14z" />
+                </svg>
                 Browse Thesis
               </Link>
             )}
@@ -613,8 +635,11 @@ const Navbar = () => {
                     handleLogout();
                     setIsMenuOpen(false);
                   }}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-red-500 hover:bg-red-600"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium bg-red-500 hover:bg-red-600 flex items-center"
                 >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 11-6 0v-1m6-10V5a3 3 0 10-6 0v1" />
+                  </svg>
                   Logout 
                 </button>
               </>
@@ -622,16 +647,22 @@ const Navbar = () => {
               <>
                 <Link
                   to="/login"
-                  className="block px-3 py-2 rounded-md text-base font-medium bg-blue-500 hover:bg-blue-700"
+                  className="block px-3 py-2 rounded-md text-base font-medium bg-blue-500 hover:bg-blue-700 flex items-center"
                   onClick={() => setIsMenuOpen(false)}
                 >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12H3m12 0l-4 4m4-4l-4-4m10 8v1a3 3 0 11-6 0v-1m6-10V5a3 3 0 10-6 0v1" />
+                  </svg>
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="block px-3 py-2 rounded-md text-base font-medium bg-green-500 hover:bg-green-700"
+                  className="block px-3 py-2 rounded-md text-base font-medium bg-green-500 hover:bg-green-700 flex items-center"
                   onClick={() => setIsMenuOpen(false)}
                 >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3M5.121 17.804A4 4 0 018 17h8a4 4 0 012.879 1.804M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                   Register
                 </Link>
               </>

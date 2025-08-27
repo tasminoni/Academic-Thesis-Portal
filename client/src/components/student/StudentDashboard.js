@@ -737,99 +737,121 @@ const StudentDashboard = () => {
 
         {/* Submission Progress Section */}
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Submission Progress</h2>
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Registration Step */}
-            <div className="flex-1 flex flex-col items-center">
-              <div className={`w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold mb-2 ${
-                thesisRegistration?.status === 'approved' ? 'bg-green-200 text-green-800' :
-                thesisRegistration?.status === 'pending' ? 'bg-yellow-200 text-yellow-800' :
-                thesisRegistration?.status === 'rejected' ? 'bg-red-200 text-red-800' :
-                'bg-gray-200 text-gray-500'
-              }`}>
-                REG
-              </div>
-              <div className="capitalize text-sm text-center">
-                {thesisRegistration?.status === 'approved' ? 'Approved' :
-                 thesisRegistration?.status === 'pending' ? 'Pending Review' :
-                 thesisRegistration?.status === 'rejected' ? 'Rejected' :
-                 'not submitted'}
-              </div>
-              {thesisRegistration?.status === 'not_submitted' && currentSupervisorStatus === 'accepted' && (
-                <div className="mt-2 text-xs text-center text-gray-600">
-                  Register thesis topic first
-                </div>
-              )}
-            </div>
+          <h2 className="text-xl font-semibold mb-6">Submission Progress</h2>
 
-            {['P1', 'P2', 'P3'].map((type, idx) => {
-              const status = getSubmissionStatus(type);
-              const thesis = myTheses.find(t => t.submissionType === type);
-              const canResubmit = thesis && thesis.status === 'rejected' && thesis.canResubmit;
-              
-              return (
-                <div key={type} className="flex-1 flex flex-col items-center">
-                  <div className={`w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold mb-2 ${
-                    status === 'approved' ? 'bg-green-200 text-green-800' :
-                    status === 'pending' ? 'bg-yellow-200 text-yellow-800' :
-                    status === 'rejected' ? 'bg-red-200 text-red-800' :
-                    'bg-gray-200 text-gray-500'
-                  }`}>
-                    {type}
+          {(() => {
+            const regStatus = thesisRegistration?.status || 'not_submitted';
+            const steps = [
+              { id: 'REG', label: 'Registration', status: regStatus },
+              { id: 'P1', label: 'P1', status: getSubmissionStatus('P1') },
+              { id: 'P2', label: 'P2', status: getSubmissionStatus('P2') },
+              { id: 'P3', label: 'P3', status: getSubmissionStatus('P3') },
+            ];
+            const isApproved = (s) => s === 'approved';
+            const completed = steps.filter(s => isApproved(s.status)).length;
+            const percent = Math.round((completed / steps.length) * 100);
+            const statusText = (s) => s === 'not_submitted' ? 'Not submitted' : s.replace('_', ' ');
+
+            return (
+              <>
+                {/* Animated progress bar */}
+                <div className="mb-8">
+                  <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500 transition-all duration-700`}
+                      style={{ width: `${percent}%` }}
+                    />
                   </div>
-                  <div className="capitalize text-sm">
-                    {status.replace('_', ' ')}
+                  <div className="mt-2 text-sm text-gray-600 flex items-center justify-between">
+                    <span className="font-medium">Overall progress</span>
+                    <span className="font-semibold text-gray-800">{percent}%</span>
                   </div>
-                  
-                  {/* Show resubmission button for rejected theses that allow resubmission */}
-                  {canResubmit && (
-                    <Link
-                      to="/create-thesis"
-                      state={{ 
-                        submissionType: type,
-                        isResubmission: true,
-                        originalThesisId: thesis._id
-                      }}
-                      className="mt-2 px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs"
-                    >
-                      Resubmit {type}
-                    </Link>
-                  )}
-                  
-                  {/* Submission button logic */}
-                  {!hasActiveSubmission(type) &&
-                    ((type === 'P1' && canSubmitThesis()) ||
-                    (type === 'P2' && hasApprovedSubmission('P1') && canSubmitThesis()) ||
-                    (type === 'P3' && hasApprovedSubmission('P2') && canSubmitThesis())) && (
-                      <Link
-                        to="/create-thesis"
-                        state={{ submissionType: type }}
-                        className="mt-2 px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs"
-                      >
-                        Submit {type}
-                      </Link>
-                  )}
-                  
-                  {/* Show message when registration is required */}
-                  {status === 'not_submitted' && 
-                   type === 'P1' && 
-                   currentSupervisorStatus === 'accepted' && 
-                   thesisRegistration?.status !== 'approved' && (
-                    <div className="mt-2 text-xs text-center text-gray-500">
-                      Registration required
-                    </div>
-                  )}
-                  
-                  {/* Show resubmission allowed message */}
-                  {canResubmit && (
-                    <div className="mt-2 text-xs text-center text-green-600">
-                      Resubmission allowed
-                    </div>
-                  )}
                 </div>
-              );
-            })}
-          </div>
+
+                {/* Steps timeline */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  {steps.map((step, idx) => {
+                    const approved = isApproved(step.status);
+                    const pending = step.status === 'pending';
+                    const rejected = step.status === 'rejected';
+                    const idle = !approved && !pending && !rejected; // not_submitted
+                    return (
+                      <div key={step.id} className="relative flex flex-col items-center">
+                        {/* Connector line to next: desktop (horizontal to the right) */}
+                        {idx < steps.length - 1 && (
+                          <div className="hidden md:block absolute top-8 left-1/2 w-1/2">
+                            <div className={`h-0.5 transition-colors duration-300 ${approved ? 'bg-emerald-400' : pending ? 'bg-sky-400' : rejected ? 'bg-rose-300' : 'bg-slate-300'}`}></div>
+                          </div>
+                        )}
+
+                        <div
+                          className={`w-16 h-16 rounded-full flex items-center justify-center mb-2 text-base font-bold shadow-sm transition-all duration-300 z-10 ${
+                            approved ? 'bg-green-200 text-green-800 ring-2 ring-green-300' :
+                            pending ? 'bg-yellow-100 text-yellow-800 ring-2 ring-yellow-200 animate-pulse' :
+                            rejected ? 'bg-red-100 text-red-800 ring-2 ring-red-200' :
+                            'bg-gray-100 text-gray-500 ring-1 ring-gray-200'
+                          }`}
+                          title={`${step.label}: ${statusText(step.status)}`}
+                        >
+                          {step.id}
+                        </div>
+                        {/* Connector line to next: mobile (vertical below the circle) */}
+                        {idx < steps.length - 1 && (
+                          <div className={`md:hidden w-0.5 h-6 ${approved ? 'bg-emerald-400' : pending ? 'bg-sky-400' : rejected ? 'bg-rose-300' : 'bg-slate-300'} mt-2`}></div>
+                        )}
+                        <div className="text-sm font-medium text-gray-800">{step.label}</div>
+                        <div className="text-xs text-gray-500 capitalize">{statusText(step.status)}</div>
+
+                        {/* Actions */}
+                        {(() => {
+                          if (step.id === 'REG') {
+                            return (
+                              thesisRegistration?.status === 'not_submitted' && currentSupervisorStatus === 'accepted' ? (
+                                <div className="mt-2 text-xs text-center text-blue-600">Register thesis topic</div>
+                              ) : null
+                            );
+                          }
+                          const type = step.id;
+                          const status = step.status;
+                          const thesis = myTheses.find(t => t.submissionType === type);
+                          const canResubmit = thesis && thesis.status === 'rejected' && thesis.canResubmit;
+
+                          return (
+                            <>
+                              {canResubmit && (
+                                <Link
+                                  to="/create-thesis"
+                                  state={{ submissionType: type, isResubmission: true, originalThesisId: thesis._id }}
+                                  className="mt-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs"
+                                >
+                                  Resubmit {type}
+                                </Link>
+                              )}
+                              {!hasActiveSubmission(type) &&
+                                ((type === 'P1' && canSubmitThesis()) ||
+                                (type === 'P2' && hasApprovedSubmission('P1') && canSubmitThesis()) ||
+                                (type === 'P3' && hasApprovedSubmission('P2') && canSubmitThesis())) && (
+                                  <Link
+                                    to="/create-thesis"
+                                    state={{ submissionType: type }}
+                                    className="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs"
+                                  >
+                                    Submit {type}
+                                  </Link>
+                              )}
+                              {status === 'not_submitted' && type === 'P1' && currentSupervisorStatus === 'accepted' && thesisRegistration?.status !== 'approved' && (
+                                <div className="mt-2 text-xs text-center text-gray-500">Registration required</div>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            );
+          })()}
         </div>
       </div>
     </div>
