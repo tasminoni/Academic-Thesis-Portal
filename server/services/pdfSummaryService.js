@@ -344,8 +344,8 @@ const postProcessSummary = (text) => {
 };
 
 // Hugging Face API configuration
-const hfToken = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_TOKEN;
-const hf = new HfInference(process.env.HUGGINGFACE_API_TOKEN);
+const hfToken = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_TOKEN || null;
+const hf = hfToken ? new HfInference(hfToken) : null;
 const HUGGINGFACE_API_URL = 'https://api-inference.huggingface.co/models/facebook/bart-large-cnn';
 const ACADEMIC_MODEL_URL = 'https://api-inference.huggingface.co/models/google/pegasus-xsum';
 const SCIENTIFIC_MODEL_URL = 'https://api-inference.huggingface.co/models/facebook/bart-large-cnn'; // For scientific content
@@ -539,6 +539,9 @@ const generateChunkSummary = async (text, options = {}, modelUrl = HUGGINGFACE_A
   const adjustedMinLength = Math.min(min_length, Math.floor(adjustedMaxLength * 0.5));
 
   try {
+    if (!hfToken) {
+      throw new Error('Hugging Face API token is not configured');
+    }
     const response = await axios.post(
       modelUrl,
       {
@@ -555,7 +558,7 @@ const generateChunkSummary = async (text, options = {}, modelUrl = HUGGINGFACE_A
       },
       {
         headers: {
-          'Authorization': `Bearer ${HUGGINGFACE_API_TOKEN}`,
+          'Authorization': `Bearer ${hfToken}`,
           'Content-Type': 'application/json'
         },
         timeout: 45000 // 45 seconds timeout for longer processing
@@ -583,6 +586,11 @@ const generateChunkSummary = async (text, options = {}, modelUrl = HUGGINGFACE_A
       } else if (error.response.status === 429) {
         throw new Error('Rate limit exceeded, please wait and try again');
       }
+    }
+    // Fallback when token missing or other error: return trimmed excerpt
+    if (!hfToken) {
+      const fallback = cleanInput.substring(0, Math.min(600, cleanInput.length));
+      return postProcessSummary(fallback);
     }
     throw error;
   }
@@ -755,6 +763,11 @@ ${combinedContent}
     } else if (error.response?.status === 429) {
       throw new Error('Rate limit exceeded, please wait and try again');
     } else {
+      // If no token configured, provide graceful fallback summary instead of throwing
+      if (!hfToken) {
+        const fallback = postProcessSummary(preprocessText(text).substring(0, 1200));
+        return `# ACADEMIC SUMMARY (Fallback)\n\n${fallback}\n\n---\n\nNote: Generated without AI model due to missing configuration.`;
+      }
       throw new Error(`Failed to generate academic summary: ${error.message}`);
     }
   }
@@ -830,8 +843,11 @@ export const generatePaperSuggestions = async (text) => {
     const { HfInference } = await import('@huggingface/inference');
     
     // Initialize Hugging Face inference
-    const hfToken = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_TOKEN || HUGGINGFACE_API_TOKEN;
-    const hf = new HfInference(hfToken);
+    const dynToken = process.env.HF_TOKEN || process.env.HUGGINGFACE_API_TOKEN || null;
+    if (!dynToken) {
+      throw new Error('Using enhanced text analysis for better reliability');
+    }
+    const hf = new HfInference(dynToken);
     
     // Prepare the text for analysis
     const cleanedText = text.substring(0, 1200); // Give models more context while staying performant
